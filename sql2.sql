@@ -4,6 +4,7 @@ JOIN kullanici k ON k.id = kiralama.kullanici_id
 JOIN arac a ON a.id = kiralama.arac_id
 WHERE k.email = 'musteri@email.com';
 
+
 -- 🚗 Sadece kiralanmış araçları listeleme
 SELECT a.marka, a.model, k.email, kiralama.kiralama_tipi, kiralama.baslangic_tarihi
 FROM kiralama

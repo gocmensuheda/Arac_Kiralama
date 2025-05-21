@@ -5,6 +5,7 @@ CREATE TABLE kullanici (
     rol VARCHAR(50) NOT NULL CHECK (rol IN ('ADMIN', 'MUSTERI', 'KURUMSAL'))
 );
 
+
 CREATE TABLE arac (
     id SERIAL PRIMARY KEY,
     marka VARCHAR(100) NOT NULL,
