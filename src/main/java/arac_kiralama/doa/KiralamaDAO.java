@@ -1,9 +1,9 @@
 package arac_kiralama.doa;
 
 
+import arac_kiralama.models.Arac;
 import arac_kiralama.models.Kiralama;
 import arac_kiralama.models.Kullanici;
-import arac_kiralama.models.Arac;
 import arac_kiralama.util.DatabaseUtil;
 
 import java.sql.*;

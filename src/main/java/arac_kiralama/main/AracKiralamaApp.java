@@ -1,10 +1,10 @@
 package arac_kiralama.main;
-
 import arac_kiralama.models.Kullanici;
 import arac_kiralama.models.Arac;
 import arac_kiralama.models.Kiralama;
 import arac_kiralama.service.KullaniciService;
 import arac_kiralama.service.AracService;
+
 import arac_kiralama.service.KiralamaService;
 
 import java.time.LocalDateTime;
@@ -30,6 +30,35 @@ public class AracKiralamaApp {
         }
     }
 
+    private static void aracEkle() {
+        if (aktifKullanici == null || !aktifKullanici.getRol().equalsIgnoreCase("ADMIN")) {
+            System.out.println("Bu işlemi sadece ADMIN kullanıcılar yapabilir!");
+            return;
+        }
+
+        System.out.print("Marka: ");
+        String marka = scanner.nextLine();
+        System.out.print("Model: ");
+        String model = scanner.nextLine();
+        System.out.print("Kategori: ");
+        String kategori = scanner.nextLine();
+        System.out.print("Kiralama Ücreti: ");
+        double kiralamaUcreti = scanner.nextDouble();
+        System.out.print("Bedel: ");
+        double bedel = scanner.nextDouble();
+        scanner.nextLine(); // Buffer temizleme
+
+        Arac yeniArac = new Arac(0, marka, model, kategori, kiralamaUcreti, bedel);
+
+        try {
+            aracService.aracEkle(yeniArac, aktifKullanici);
+            System.out.println("Araç başarıyla eklendi: " + marka + " " + model);
+        } catch (Exception e) {
+            System.out.println("Araç ekleme işlemi başarısız! " + e.getMessage());
+        }
+    }
+
+
     private static void girisYap() {
         System.out.print("Email: ");
         String email = scanner.nextLine();
@@ -51,6 +80,7 @@ public class AracKiralamaApp {
         System.out.println("2 - Araç Kirala");
         System.out.println("3 - Kiralama Geçmişi");
         System.out.println("4 - Çıkış Yap");
+        System.out.println("5 - Araç Ekle (Sadece Admin)  -- Otomobil, Helikopter, Motosiklet");
         System.out.print("Seçiminiz: ");
 
         int secim = scanner.nextInt();
@@ -68,6 +98,9 @@ public class AracKiralamaApp {
                 break;
             case 4:
                 cikisYap();
+                break;
+            case 5:
+                aracEkle();
                 break;
             default:
                 System.out.println("Geçersiz seçim! Lütfen tekrar deneyin.");

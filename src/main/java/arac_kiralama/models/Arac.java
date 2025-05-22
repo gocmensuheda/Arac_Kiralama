@@ -1,5 +1,6 @@
 package arac_kiralama.models;
 
+
 public class Arac {
     private int id;
     private String marka;
@@ -65,5 +66,17 @@ public class Arac {
 
     public void setDepozito(double depozito) {
         this.depozito = depozito;
+    }
+
+    @Override
+    public String toString() {
+        return "Arac{" +
+                "id=" + id +
+                ", marka='" + marka + '\'' +
+                ", model='" + model + '\'' +
+                ", kategori='" + kategori + '\'' +
+                ", fiyat=" + fiyat +
+                ", depozito=" + depozito +
+                '}';
     }
 }
