@@ -1,6 +1,8 @@
 package arac_kiralama.models;
 import java.time.LocalDateTime;
 
+import java.util.Objects;
+
 public class Kiralama {
     private int id;
     private Kullanici musteri;
@@ -13,19 +15,22 @@ public class Kiralama {
         this.id = id;
         this.musteri = musteri;
         this.arac = arac;
-        this.baslangicTarihi = baslangicTarihi;
-        this.bitisTarihi = bitisTarihi;
-        this.kiralamaTipi = kiralamaTipi;
+        setBaslangicTarihi(baslangicTarihi);
+        setBitisTarihi(bitisTarihi);
+        setKiralamaTipi(kiralamaTipi);
     }
 
     // Getter ve Setter metotları
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
-        this.id = id;
+        if (id > 0) {
+            this.id = id;
+        } else {
+            throw new IllegalArgumentException("ID negatif veya 0 olamaz!");
+        }
     }
 
     public Kullanici getMusteri() {
@@ -33,15 +38,11 @@ public class Kiralama {
     }
 
     public void setMusteri(Kullanici musteri) {
-        this.musteri = musteri;
-    }
-
-    public LocalDateTime getBaslangicTarihi() {
-        return baslangicTarihi;
-    }
-
-    public void setBaslangicTarihi(LocalDateTime baslangicTarihi) {
-        this.baslangicTarihi = baslangicTarihi;
+        if (musteri != null) {
+            this.musteri = musteri;
+        } else {
+            throw new IllegalArgumentException("Müşteri bilgisi boş olamaz!");
+        }
     }
 
     public Arac getArac() {
@@ -49,7 +50,22 @@ public class Kiralama {
     }
 
     public void setArac(Arac arac) {
-        this.arac = arac;
+        if (arac != null) {
+            this.arac = arac;
+        } else {
+            throw new IllegalArgumentException("Araç bilgisi boş olamaz!");
+        }
+    }
+
+    public LocalDateTime getBaslangicTarihi() {
+        return baslangicTarihi;
+    }
+
+    public void setBaslangicTarihi(LocalDateTime baslangicTarihi) {
+        if (baslangicTarihi.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Başlangıç tarihi geçmişte olamaz!");
+        }
+        this.baslangicTarihi = baslangicTarihi;
     }
 
     public LocalDateTime getBitisTarihi() {
@@ -57,6 +73,9 @@ public class Kiralama {
     }
 
     public void setBitisTarihi(LocalDateTime bitisTarihi) {
+        if (bitisTarihi.isBefore(baslangicTarihi)) {
+            throw new IllegalArgumentException("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
+        }
         this.bitisTarihi = bitisTarihi;
     }
 
@@ -65,6 +84,45 @@ public class Kiralama {
     }
 
     public void setKiralamaTipi(String kiralamaTipi) {
-        this.kiralamaTipi = kiralamaTipi;
+        if (kiralamaTipi.equalsIgnoreCase("Saatlik") ||
+                kiralamaTipi.equalsIgnoreCase("Günlük") ||
+                kiralamaTipi.equalsIgnoreCase("Haftalık") ||
+                kiralamaTipi.equalsIgnoreCase("Aylık")) {
+            this.kiralamaTipi = kiralamaTipi;
+        } else {
+            throw new IllegalArgumentException("Geçersiz kiralama tipi!");
+        }
+    }
+
+    // Nesnenin ekrana yazdırılmasını kolaylaştıran toString metodu
+    @Override
+    public String toString() {
+        return "Kiralama { " +
+                "ID=" + id +
+                ", Müşteri=" + musteri.getEmail() +
+                ", Araç=" + arac.getMarka() + " " + arac.getModel() +
+                ", Başlangıç Tarihi=" + baslangicTarihi +
+                ", Bitiş Tarihi=" + bitisTarihi +
+                ", Kiralama Tipi='" + kiralamaTipi + '\'' +
+                " }";
+    }
+
+    // Nesne karşılaştırmaları için equals ve hashCode metotları
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Kiralama)) return false;
+        Kiralama kiralama = (Kiralama) o;
+        return id == kiralama.id &&
+                Objects.equals(musteri, kiralama.musteri) &&
+                Objects.equals(arac, kiralama.arac) &&
+                Objects.equals(baslangicTarihi, kiralama.baslangicTarihi) &&
+                Objects.equals(bitisTarihi, kiralama.bitisTarihi) &&
+                Objects.equals(kiralamaTipi, kiralama.kiralamaTipi);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, musteri, arac, baslangicTarihi, bitisTarihi, kiralamaTipi);
     }
 }
