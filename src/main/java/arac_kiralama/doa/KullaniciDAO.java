@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class KullaniciDAO {
 
-    // Kullanıcıyı veritabanına ekleme (Şifre hashlenmiş şekilde)
+    // 🛠 Kullanıcıyı veritabanına ekleme (Şifre hashlenmiş şekilde)
     public void kullaniciEkle(String email, String sifre, String rol, int yas) {
         try (Connection conn = DatabaseUtil.getConnection()) {
             String hashliSifre = SifrelemeUtil.sifreleSHA256(sifre); // Şifreyi hashle
@@ -30,9 +30,9 @@ public class KullaniciDAO {
         }
     }
 
-    // Kullanıcı giriş işlemi (SHA-256 ile doğrulama)
+    // 🛠 Kullanıcı giriş işlemi (SHA-256 ile doğrulama)
     public Kullanici girisYap(String email, String sifre) {
-        String sql = "SELECT sifre, rol, yas FROM kullanicilar2 WHERE email = ?";
+        String sql = "SELECT id, sifre, rol, yas FROM kullanicilar2 WHERE email = ?";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -40,15 +40,16 @@ public class KullaniciDAO {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                int kullaniciId = rs.getInt("id"); // Kullanıcının ID'sini çekiyoruz
                 String kayitliHashliSifre = rs.getString("sifre");
                 String girilenSifreHash = SifrelemeUtil.sifreleSHA256(sifre);
+
                 System.out.println("Giriş sırasında üretilen hash: " + girilenSifreHash);
                 System.out.println("Veritabanında kayıtlı hash: " + kayitliHashliSifre);
-// Kullanıcının girdiği şifreyi hashle
 
                 if (kayitliHashliSifre.equals(girilenSifreHash)) {
                     System.out.println("Giriş başarılı!");
-                    return new Kullanici(email, kayitliHashliSifre, rs.getString("rol"));
+                    return new Kullanici(kullaniciId, email, kayitliHashliSifre, rs.getString("rol"), rs.getInt("yas"), 0);
                 } else {
                     System.out.println("Hatalı şifre!");
                 }
@@ -61,8 +62,9 @@ public class KullaniciDAO {
         return null;
     }
 
-    // Admin kullanıcı ekleme
+    // 🛠 Admin kullanıcı ekleme
     public void yeniAdminEkle() {
         kullaniciEkle("admin@example.com", "gizliSifre", "ADMIN", 35); // Admin eklenirken yaş bilgisi giriyoruz
     }
 }
+

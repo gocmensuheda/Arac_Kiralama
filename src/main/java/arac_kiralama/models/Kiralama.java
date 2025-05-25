@@ -1,7 +1,6 @@
 package arac_kiralama.models;
-import java.time.LocalDateTime;
 
-import java.util.Objects;
+import java.time.LocalDateTime;
 
 public class Kiralama {
     private int id;
@@ -9,57 +8,31 @@ public class Kiralama {
     private Arac arac;
     private LocalDateTime baslangicTarihi;
     private LocalDateTime bitisTarihi;
-    private String kiralamaTipi; // "Saatlik", "Günlük", "Haftalık", "Aylık"
+    private String kiralamaTipi;
+    private double depozito;
+    private double kiralamaUcreti; // Kiralama ücreti eklendi
 
-    public Kiralama(int id, Kullanici musteri, Arac arac, LocalDateTime baslangicTarihi, LocalDateTime bitisTarihi, String kiralamaTipi) {
+    public Kiralama(int id, Kullanici musteri, Arac arac, LocalDateTime baslangicTarihi, LocalDateTime bitisTarihi, String kiralamaTipi, double depozito, double kiralamaUcreti) {
         this.id = id;
         this.musteri = musteri;
         this.arac = arac;
         setBaslangicTarihi(baslangicTarihi);
         setBitisTarihi(bitisTarihi);
         setKiralamaTipi(kiralamaTipi);
+        setDepozito(depozito);
+        setKiralamaUcreti(kiralamaUcreti); // Yeni ücret alanını ekledik
     }
 
     // Getter ve Setter metotları
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public Kullanici getMusteri() { return musteri; }
+    public Arac getArac() { return arac; }
+    public LocalDateTime getBaslangicTarihi() { return baslangicTarihi; }
+    public LocalDateTime getBitisTarihi() { return bitisTarihi; }
+    public String getKiralamaTipi() { return kiralamaTipi; }
+    public double getDepozito() { return depozito; }
+    public double getKiralamaUcreti() { return kiralamaUcreti; }
 
-    public void setId(int id) {
-        if (id > 0) {
-            this.id = id;
-        } else {
-            throw new IllegalArgumentException("ID negatif veya 0 olamaz!");
-        }
-    }
-
-    public Kullanici getMusteri() {
-        return musteri;
-    }
-
-    public void setMusteri(Kullanici musteri) {
-        if (musteri != null) {
-            this.musteri = musteri;
-        } else {
-            throw new IllegalArgumentException("Müşteri bilgisi boş olamaz!");
-        }
-    }
-
-    public Arac getArac() {
-        return arac;
-    }
-
-    public void setArac(Arac arac) {
-        if (arac != null) {
-            this.arac = arac;
-        } else {
-            throw new IllegalArgumentException("Araç bilgisi boş olamaz!");
-        }
-    }
-
-    public LocalDateTime getBaslangicTarihi() {
-        return baslangicTarihi;
-    }
 
     public void setBaslangicTarihi(LocalDateTime baslangicTarihi) {
         if (baslangicTarihi.isBefore(LocalDateTime.now())) {
@@ -68,19 +41,11 @@ public class Kiralama {
         this.baslangicTarihi = baslangicTarihi;
     }
 
-    public LocalDateTime getBitisTarihi() {
-        return bitisTarihi;
-    }
-
     public void setBitisTarihi(LocalDateTime bitisTarihi) {
         if (bitisTarihi.isBefore(baslangicTarihi)) {
             throw new IllegalArgumentException("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
         }
         this.bitisTarihi = bitisTarihi;
-    }
-
-    public String getKiralamaTipi() {
-        return kiralamaTipi;
     }
 
     public void setKiralamaTipi(String kiralamaTipi) {
@@ -94,6 +59,20 @@ public class Kiralama {
         }
     }
 
+    public void setDepozito(double depozito) {
+        if (depozito < 0) {
+            throw new IllegalArgumentException("Depozito negatif olamaz!");
+        }
+        this.depozito = depozito;
+    }
+
+    public void setKiralamaUcreti(double kiralamaUcreti) {
+        if (kiralamaUcreti < 0) {
+            throw new IllegalArgumentException("Kiralama ücreti negatif olamaz!");
+        }
+        this.kiralamaUcreti = kiralamaUcreti;
+    }
+
     // Nesnenin ekrana yazdırılmasını kolaylaştıran toString metodu
     @Override
     public String toString() {
@@ -104,25 +83,9 @@ public class Kiralama {
                 ", Başlangıç Tarihi=" + baslangicTarihi +
                 ", Bitiş Tarihi=" + bitisTarihi +
                 ", Kiralama Tipi='" + kiralamaTipi + '\'' +
+                ", Depozito=" + depozito +
+                ", Kiralama Ücreti=" + kiralamaUcreti +
                 " }";
     }
-
-    // Nesne karşılaştırmaları için equals ve hashCode metotları
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Kiralama)) return false;
-        Kiralama kiralama = (Kiralama) o;
-        return id == kiralama.id &&
-                Objects.equals(musteri, kiralama.musteri) &&
-                Objects.equals(arac, kiralama.arac) &&
-                Objects.equals(baslangicTarihi, kiralama.baslangicTarihi) &&
-                Objects.equals(bitisTarihi, kiralama.bitisTarihi) &&
-                Objects.equals(kiralamaTipi, kiralama.kiralamaTipi);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, musteri, arac, baslangicTarihi, bitisTarihi, kiralamaTipi);
-    }
 }
+

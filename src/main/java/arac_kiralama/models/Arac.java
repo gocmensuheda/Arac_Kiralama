@@ -1,71 +1,58 @@
 package arac_kiralama.models;
 
-
 public class Arac {
     private int id;
     private String marka;
     private String model;
-    private String kategori; // "Otomobil", "Motosiklet", "Helikopter"
-    private double fiyat;
+    private String kategori; // Veri tabanından çekilecek
+    private double kiralamaUcreti;
+    private double bedel;
     private double depozito;
 
-    public Arac(int id, String marka, String model, String kategori, double fiyat, double depozito) {
+    // 🚀 Yapıcı metoddan kategori doğrulama kaldırıldı, doğrudan atanıyor
+    public Arac(int id, String marka, String model, String kategori, double kiralamaUcreti, double bedel) {
         this.id = id;
         this.marka = marka;
         this.model = model;
-        this.kategori = kategori;
-        this.fiyat = fiyat;
-        this.depozito = depozito;
+        this.kiralamaUcreti = kiralamaUcreti;
+        this.bedel = bedel;
+        this.depozito = (bedel > 2000000) ? bedel * 0.10 : 0;
+
+        // ✅ Kategori doğrudan atanıyor, null veya boşsa "Otomobil" olarak belirleniyor
+        this.kategori = (kategori == null || kategori.isEmpty()) ? "Otomobil" : kategori;
     }
 
-    // Getter ve Setter metotları
+    // Getter metotları
+    public int getId() { return id; }
+    public String getMarka() { return marka; }
+    public String getModel() { return model; }
+    public String getKategori() { return kategori; }
+    public double getKiralamaUcreti() { return kiralamaUcreti; }
+    public double getBedel() { return bedel; }
+    public double getDepozito() { return depozito; }
 
-    public int getId() {
-        return id;
-    }
+    // 🚀 Kiralama Ücretini Hesaplayan Metot
+    public double hesaplaKiralamaUcreti(String kiralamaTipi) {
+        if (kiralamaUcreti <= 0) {
+            throw new IllegalArgumentException("Araç kiralama ücreti geçersiz!");
+        }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+        double fiyat = switch (kiralamaTipi.toLowerCase()) {
+            case "saatlik" -> kiralamaUcreti;
+            case "gunluk" -> kiralamaUcreti * 8;
+            case "haftalik" -> kiralamaUcreti * 8 * 7;
+            case "aylik" -> kiralamaUcreti * 8 * 30;
+            default -> throw new IllegalArgumentException("Geçersiz kiralama tipi!");
+        };
 
-    public String getMarka() {
-        return marka;
-    }
+        // 🚀 Araç kategorisine göre fiyat belirleme
+        if (kategori.equalsIgnoreCase("Helikopter")) {
+            fiyat *= 2.5;
+        } else if (kategori.equalsIgnoreCase("Motosiklet")) {
+            fiyat *= 0.75;
+        }
 
-    public void setMarka(String marka) {
-        this.marka = marka;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getKategori() {
-        return kategori;
-    }
-
-    public void setKategori(String kategori) {
-        this.kategori = kategori;
-    }
-
-    public double getFiyat() {
         return fiyat;
-    }
-
-    public void setFiyat(double fiyat) {
-        this.fiyat = fiyat;
-    }
-
-    public double getDepozito() {
-        return depozito;
-    }
-
-    public void setDepozito(double depozito) {
-        this.depozito = depozito;
     }
 
     @Override
@@ -75,8 +62,10 @@ public class Arac {
                 ", marka='" + marka + '\'' +
                 ", model='" + model + '\'' +
                 ", kategori='" + kategori + '\'' +
-                ", fiyat=" + fiyat +
+                ", kiralamaUcreti=" + kiralamaUcreti +
+                ", bedel=" + bedel +
                 ", depozito=" + depozito +
                 '}';
     }
 }
+
