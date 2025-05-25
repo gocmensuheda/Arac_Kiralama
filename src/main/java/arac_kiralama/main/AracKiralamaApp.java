@@ -130,13 +130,23 @@ public class AracKiralamaApp {
 
         System.out.print("⏳ Kiralama Tipi (Saatlik/Günlük/Haftalık/Aylık): ");
         String kiralamaTipi = scanner.nextLine().trim();
+// Kullanıcının girdiği değeri veritabanındaki format ile eşleşecek şekilde düzelt
+        if (kiralamaTipi.equalsIgnoreCase("Günlük")) {
+            kiralamaTipi = "Gunluk"; // Veritabanının kabul ettiği format
+        } else if (kiralamaTipi.equalsIgnoreCase("Haftalık")) {
+            kiralamaTipi = "Haftalik";
+        } else if (kiralamaTipi.equalsIgnoreCase("Aylık")) {
+            kiralamaTipi = "Aylik";
+        }
+
 
 // Kullanıcı geçersiz bir değer girerse hata almamak için kontrol ekleyelim
         if (!kiralamaTipi.equalsIgnoreCase("Saatlik") &&
-                !kiralamaTipi.equalsIgnoreCase("Günlük") &&
+                !kiralamaTipi.equalsIgnoreCase("Gunluk") &&
                 !kiralamaTipi.equalsIgnoreCase("Haftalık") &&
                 !kiralamaTipi.equalsIgnoreCase("Aylık")) {
             System.out.println("❌ Geçersiz kiralama tipi! Lütfen geçerli bir seçenek girin.");
+            System.out.println("Veritabanına gidecek kiralama_tipi: " + kiralamaTipi); // Terminalde kontrol için ekleme
             return;
         }
 

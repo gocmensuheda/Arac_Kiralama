@@ -13,33 +13,70 @@ import java.util.List;
 public class KiralamaDAO {
 
     public void kiralamaEkle(Kiralama kiralama) {
-        String sql = "INSERT INTO kiralama (kullanici_id, arac_id, baslangic_tarihi, bitis_tarihi, depozito, toplam_ucret) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO kiralama (kullanici_id, arac_id, kiralama_tipi, baslangic_tarihi, bitis_tarihi, depozito, toplam_ucret) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseUtil.getConnection()) {
-            conn.setAutoCommit(false); // Transaction başlat
+            conn.setAutoCommit(false); // ✅ Transaction başlat
+
+            // ✅ Kiralama ücreti ve depozito hesapla
+            double hesaplananUcret = kiralamaUcretiHesapla(kiralama);
+            double hesaplananDepozito = depozitoHesapla(kiralama);
+
+            kiralama.setKiralamaUcreti(hesaplananUcret);
+            kiralama.setDepozito(hesaplananDepozito);
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, kiralama.getMusteri().getId());
                 pstmt.setInt(2, kiralama.getArac().getId());
-                pstmt.setTimestamp(3, Timestamp.valueOf(kiralama.getBaslangicTarihi()));
-                pstmt.setTimestamp(4, Timestamp.valueOf(kiralama.getBitisTarihi()));
-                pstmt.setDouble(5, kiralama.getDepozito());
-                pstmt.setDouble(6, kiralama.getKiralamaUcreti());
+                pstmt.setString(3, kiralama.getKiralamaTipi());
+                pstmt.setTimestamp(4, Timestamp.valueOf(kiralama.getBaslangicTarihi()));
+                pstmt.setTimestamp(5, Timestamp.valueOf(kiralama.getBitisTarihi()));
+                pstmt.setDouble(6, kiralama.getDepozito());
+                pstmt.setDouble(7, kiralama.getKiralamaUcreti());
 
                 pstmt.executeUpdate();
-                conn.commit(); // İşlem başarılı, tamamla
-                System.out.println("✅ Kiralama başarıyla tamamlandı! Ücret: " + kiralama.getKiralamaUcreti() + " TL");
+                conn.commit(); // ✅ İşlem başarılı, commit
+
+                System.out.println("✅ Kiralama başarıyla tamamlandı! Ücret: " + hesaplananUcret + " TL, Depozito: " + hesaplananDepozito + " TL");
             } catch (SQLException e) {
-                conn.rollback(); // Eğer hata oluşursa geri al
+                conn.rollback(); // ❌ Hata olursa geri al
+                System.out.println("❌ Kiralama işlemi başarısız oldu! Hata detayı: " + e.getMessage());
                 throw new RuntimeException("❌ Kiralama işlemi sırasında hata oluştu! Geri alındı.", e);
             }
+
         } catch (SQLException e) {
             throw new RuntimeException("❌ Veritabanı bağlantı hatası!", e);
         }
     }
 
+    // ✅ Kiralama ücreti hesaplama metodu
+    public double kiralamaUcretiHesapla(Kiralama kiralama) {
+        double ucret = kiralama.getArac().getKiralamaUcreti();
 
-    // 2️⃣ Kullanıcının Kiralama Geçmişini Getirme
+        if (kiralama.getKiralamaTipi().equalsIgnoreCase("Saatlik")) {
+            return ucret * 1;
+        } else if (kiralama.getKiralamaTipi().equalsIgnoreCase("Gunluk")) {
+            return ucret * 24;
+        } else if (kiralama.getKiralamaTipi().equalsIgnoreCase("Haftalik")) {
+            return ucret * 7 * 24;
+        } else if (kiralama.getKiralamaTipi().equalsIgnoreCase("Aylik")) {
+            return ucret * 30 * 24;
+        }
+        return 1000; // Varsayılan hata önleme değeri
+    }
+
+    // ✅ Depozito hesaplama metodu
+    public double depozitoHesapla(Kiralama kiralama) {
+        double aracBedeli = kiralama.getArac().getBedel();
+
+        if (aracBedeli > 2000000) {
+            return aracBedeli * 0.10; // 2 milyon üzeri için %10 depozito
+        } else {
+            return kiralamaUcretiHesapla(kiralama) * 2; // Diğer araçlar için depozito
+        }
+    }
+
+    // ✅ Kullanıcının Kiralama Geçmişini Getirme
     public List<Kiralama> kiralamaGecmisiGetir(int kullaniciId) {
         List<Kiralama> kiralamaListesi = new ArrayList<>();
         String sql = "SELECT k.id, a.marka, a.model, k.baslangic_tarihi, k.bitis_tarihi, k.kiralama_tipi, k.depozito, k.toplam_ucret FROM kiralama k " +
@@ -62,7 +99,7 @@ public class KiralamaDAO {
                         rs.getTimestamp("bitis_tarihi").toLocalDateTime(),
                         rs.getString("kiralama_tipi"),
                         rs.getDouble("depozito"),
-                        rs.getDouble("toplam_ucret") // Yeni eklenen alan
+                        rs.getDouble("toplam_ucret")
                 );
                 kiralamaListesi.add(kiralama);
             }
@@ -70,28 +107,5 @@ public class KiralamaDAO {
             throw new RuntimeException("❌ Kiralama geçmişi getirme hatası!", e);
         }
         return kiralamaListesi;
-    }
-
-    // 3️⃣ Araç Kiralanabilir Mi? (Yaş ve Depozito Kontrolü)
-    public boolean aracKiralanabilirMi(int aracId, int yas, double depozito) {
-        String sql = "SELECT bedel FROM arac WHERE id = ?";
-
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, aracId);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                double aracBedeli = rs.getDouble("bedel");
-
-                if (aracBedeli > 2_000_000) {
-                    return (yas >= 30) && (depozito >= aracBedeli * 0.10);
-                }
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("❌ Araç kiralanabilir mi kontrolü sırasında hata oluştu!", e);
-        }
-        return false;
     }
 }

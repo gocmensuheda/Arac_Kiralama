@@ -1,4 +1,4 @@
-package arac_kiralama.dao;
+package arac_kiralama.doa;
 
 import arac_kiralama.models.Arac;
 import arac_kiralama.util.DatabaseUtil;

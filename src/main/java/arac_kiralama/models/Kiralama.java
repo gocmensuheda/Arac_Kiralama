@@ -50,7 +50,7 @@ public class Kiralama {
 
     public void setKiralamaTipi(String kiralamaTipi) {
         if (kiralamaTipi.equalsIgnoreCase("Saatlik") ||
-                kiralamaTipi.equalsIgnoreCase("Günlük") ||
+                kiralamaTipi.equalsIgnoreCase("Gunluk") ||
                 kiralamaTipi.equalsIgnoreCase("Haftalık") ||
                 kiralamaTipi.equalsIgnoreCase("Aylık")) {
             this.kiralamaTipi = kiralamaTipi;

@@ -44,11 +44,11 @@ public class KiralamaService {
         kiralama.setKiralamaUcreti(kiralamaUcreti);
         kiralama.setDepozito(depozito);
 
-        // 5️⃣ Araç kiralanabilir mi kontrolü
+      /* // 5️⃣ Araç kiralanabilir mi kontrolü
         boolean uygunMu = kiralamaDAO.aracKiralanabilirMi(arac.getId(), kullanici.getYas(), depozito);
         if (!uygunMu) {
             throw new RuntimeException("❌ Araç kiralamaya uygun değil!");
-        }
+        }*/
 
         // Kiralama işlemini veritabanına kaydet
         kiralamaDAO.kiralamaEkle(kiralama);

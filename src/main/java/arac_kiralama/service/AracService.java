@@ -6,7 +6,7 @@ import arac_kiralama.expection.YetkisizIslemException;
 import arac_kiralama.models.Kullanici;
 
 public class AracService {
-    public arac_kiralama.dao.AracDAO aracDAO = new arac_kiralama.dao.AracDAO();
+    public arac_kiralama.doa.AracDAO aracDAO = new arac_kiralama.doa.AracDAO();
 
     // 1️⃣ Araçları Listeleme
     public List<Arac> araclariListele(int sayfa, int sayfaBoyutu) {
