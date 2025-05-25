@@ -19,3 +19,16 @@ public class Main {
         AracKiralamaApp.main(args);
     }
 }
+/********* VERİ TABANINDAKİ KULLANICILARIN BİLGİLERİ*************
+ *
+ 1-admin.example.com  Şifre-> admin123
+
+ 2-musteri@examplen.com   Şifre-> musteri123
+
+ 3-musteri2@example.com   Şifre->musteri2
+
+ 4-kurumsal@example.com  Şifre->kurumsal123
+
+
+
+ */

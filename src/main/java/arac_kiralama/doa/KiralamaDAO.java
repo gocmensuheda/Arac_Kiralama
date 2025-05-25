@@ -16,9 +16,9 @@ public class KiralamaDAO {
         String sql = "INSERT INTO kiralama (kullanici_id, arac_id, kiralama_tipi, baslangic_tarihi, bitis_tarihi, depozito, toplam_ucret) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseUtil.getConnection()) {
-            conn.setAutoCommit(false); // ✅ Transaction başlat
+            conn.setAutoCommit(false); //  Transaction başlat
 
-            // ✅ Kiralama ücreti ve depozito hesapla
+            //  Kiralama ücreti ve depozito hesapla
             double hesaplananUcret = kiralamaUcretiHesapla(kiralama);
             double hesaplananDepozito = depozitoHesapla(kiralama);
 
@@ -35,21 +35,21 @@ public class KiralamaDAO {
                 pstmt.setDouble(7, kiralama.getKiralamaUcreti());
 
                 pstmt.executeUpdate();
-                conn.commit(); // ✅ İşlem başarılı, commit
+                conn.commit(); //  İşlem başarılı, commit
 
-                System.out.println("✅ Kiralama başarıyla tamamlandı! Ücret: " + hesaplananUcret + " TL, Depozito: " + hesaplananDepozito + " TL");
+                System.out.println(" Kiralama başarıyla tamamlandı! Ücret: " + hesaplananUcret + " TL, Depozito: " + hesaplananDepozito + " TL");
             } catch (SQLException e) {
-                conn.rollback(); // ❌ Hata olursa geri al
-                System.out.println("❌ Kiralama işlemi başarısız oldu! Hata detayı: " + e.getMessage());
-                throw new RuntimeException("❌ Kiralama işlemi sırasında hata oluştu! Geri alındı.", e);
+                conn.rollback(); //  Hata olursa geri al
+                System.out.println(" Kiralama işlemi başarısız oldu! Hata detayı: " + e.getMessage());
+                throw new RuntimeException(" Kiralama işlemi sırasında hata oluştu! Geri alındı.", e);
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Veritabanı bağlantı hatası!", e);
+            throw new RuntimeException(" Veritabanı bağlantı hatası!", e);
         }
     }
 
-    // ✅ Kiralama ücreti hesaplama metodu
+    //  Kiralama ücreti hesaplama metodu
     public double kiralamaUcretiHesapla(Kiralama kiralama) {
         double ucret = kiralama.getArac().getKiralamaUcreti();
 
@@ -65,7 +65,7 @@ public class KiralamaDAO {
         return 1000; // Varsayılan hata önleme değeri
     }
 
-    // ✅ Depozito hesaplama metodu
+    //  Depozito hesaplama metodu
     public double depozitoHesapla(Kiralama kiralama) {
         double aracBedeli = kiralama.getArac().getBedel();
 
@@ -76,7 +76,7 @@ public class KiralamaDAO {
         }
     }
 
-    // ✅ Kullanıcının Kiralama Geçmişini Getirme
+    //  Kullanıcının Kiralama Geçmişini Getirme
     public List<Kiralama> kiralamaGecmisiGetir(int kullaniciId) {
         List<Kiralama> kiralamaListesi = new ArrayList<>();
         String sql = "SELECT k.id, a.marka, a.model, k.baslangic_tarihi, k.bitis_tarihi, k.kiralama_tipi, k.depozito, k.toplam_ucret FROM kiralama k " +

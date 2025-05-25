@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AracDAO {
 
-    // 1️⃣ Araç Ekleme (Transaction Yönetimi Eklendi)
+    // 1️ Araç Ekleme (Transaction Yönetimi Eklendi)
     public void aracEkle(Arac arac) {
         String sql = "INSERT INTO arac (marka, model, kategori, kiralama_ucreti, bedel) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseUtil.getConnection()) {
@@ -24,14 +24,14 @@ public class AracDAO {
 
                 pstmt.executeUpdate();
                 conn.commit(); // İşlemi tamamla
-                System.out.println("✅ Araç başarıyla eklendi: " + arac.getMarka() + " " + arac.getModel());
+                System.out.println(" Araç başarıyla eklendi: " + arac.getMarka() + " " + arac.getModel());
             }
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Araç ekleme sırasında hata oluştu!", e);
+            throw new RuntimeException(" Araç ekleme sırasında hata oluştu!", e);
         }
     }
 
-    // 2️⃣ Araç Listesi Getirme (Sayfalama ile)
+    // 2⃣ Araç Listesi Getirme (Sayfalama ile)
     public List<Arac> araclariGetir(int sayfa, int sayfaBoyutu) {
         List<Arac> aracListesi = new ArrayList<>();
         int offset = (sayfa - 1) * sayfaBoyutu;
@@ -55,12 +55,12 @@ public class AracDAO {
                 aracListesi.add(arac);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Araçları getirirken hata oluştu!", e);
+            throw new RuntimeException(" Araçları getirirken hata oluştu!", e);
         }
         return aracListesi;
     }
 
-    // 3️⃣ Kategoriye Göre Araç Filtreleme
+    // 3️ Kategoriye Göre Araç Filtreleme
     public List<Arac> kategoriyeGoreAracGetir(String kategori) {
         List<Arac> aracListesi = new ArrayList<>();
         String sql = "SELECT * FROM arac WHERE kategori = ?";
@@ -82,12 +82,12 @@ public class AracDAO {
                 aracListesi.add(arac);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Kategoriye göre araç getirme hatası!", e);
+            throw new RuntimeException(" Kategoriye göre araç getirme hatası!", e);
         }
         return aracListesi;
     }
 
-    // 4️⃣ ID'ye Göre Araç Getirme (Eksik metod eklendi!)
+    //  ID'ye Göre Araç Getirme (Eksik metod eklendi!)
     public Arac getAracById(int aracId) {
         String sql = "SELECT * FROM arac WHERE id = ?";
         try (Connection conn = DatabaseUtil.getConnection();
@@ -106,12 +106,12 @@ public class AracDAO {
                 );
             }
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Araç ID ile getirme işlemi sırasında hata oluştu!", e);
+            throw new RuntimeException(" Araç ID ile getirme işlemi sırasında hata oluştu!", e);
         }
         return null; // Eğer araç bulunamazsa null döner
     }
 
-    // 5️⃣ Araç Kiralanabilir mi? (Geliştirilmiş Koşul Kontrolleri)
+    //  Araç Kiralanabilir mi? (Geliştirilmiş Koşul Kontrolleri)
     public boolean aracKiralanabilirMi(int aracId, int yas, double depozito) {
         String sql = "SELECT bedel FROM arac WHERE id = ?";
         try (Connection conn = DatabaseUtil.getConnection();
@@ -128,7 +128,7 @@ public class AracDAO {
                 return true;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Araç kiralanabilir mi kontrolü sırasında hata oluştu!", e);
+            throw new RuntimeException(" Araç kiralanabilir mi kontrolü sırasında hata oluştu!", e);
         }
         return false;
     }
