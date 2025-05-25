@@ -54,6 +54,23 @@ public class AracKiralamaApp {
         }
     }
 
+    private static void kategoriBazliAracListele() {
+        System.out.print("🔍 Kategoriye göre araç aramak için kategori girin: ");
+        String kategori = scanner.nextLine().trim();
+
+        List<Arac> aracListesi = aracService.kategoriyeGoreAra(kategori);
+
+        if (aracListesi.isEmpty()) {
+            System.out.println("❌ Bu kategoride araç bulunamadı!");
+        } else {
+            System.out.println("\n🚗 **Kategori Bazlı Araçlar:**");
+            for (Arac arac : aracListesi) {
+                System.out.println(arac);
+            }
+        }
+    }
+
+
     private static void adminMenu() {
         System.out.println("\n🔹 **Admin Menü:**");
         System.out.println("1️⃣ - Araçları Listele");
@@ -75,6 +92,7 @@ public class AracKiralamaApp {
     private static void kullaniciMenu() {
         System.out.println("\n🔹 **Kullanıcı Menü:**");
         System.out.println("1️⃣ - Araçları Listele");
+        System.out.println("2️⃣ - Kategori Bazlı Araç Listele");
         System.out.println("2️⃣ - Araç Kirala");
         System.out.println("3️⃣ - Kiralama Geçmişi");
         System.out.println("4️⃣ - Çıkış Yap");
@@ -85,9 +103,10 @@ public class AracKiralamaApp {
 
         switch (secim) {
             case 1 -> aracListele();
-            case 2 -> aracKirala();
-            case 3 -> kiralamaGecmisiGoruntule();
-            case 4 -> cikisYap();
+            case 2 -> kategoriBazliAracListele();
+            case 3 -> aracKirala();
+            case 4 -> kiralamaGecmisiGoruntule();
+            case 5 -> cikisYap();
             default -> System.out.println("❌ Geçersiz seçim! Lütfen tekrar deneyin.");
         }
     }

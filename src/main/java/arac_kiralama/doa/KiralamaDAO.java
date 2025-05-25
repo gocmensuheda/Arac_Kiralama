@@ -12,27 +12,32 @@ import java.util.List;
 
 public class KiralamaDAO {
 
-    // 1️⃣ Kiralama Ekleme (Doğrulamalar artık Service katmanında!)
     public void kiralamaEkle(Kiralama kiralama) {
-        String sql = "INSERT INTO kiralama (kullanici_id, arac_id, baslangic_tarihi, bitis_tarihi, kiralama_tipi, depozito, toplam_ucret) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO kiralama (kullanici_id, arac_id, baslangic_tarihi, bitis_tarihi, depozito, toplam_ucret) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            conn.setAutoCommit(false); // Transaction başlat
 
-            pstmt.setInt(1, kiralama.getMusteri().getId());
-            pstmt.setInt(2, kiralama.getArac().getId());
-            pstmt.setTimestamp(3, Timestamp.valueOf(kiralama.getBaslangicTarihi()));
-            pstmt.setTimestamp(4, Timestamp.valueOf(kiralama.getBitisTarihi()));
-            pstmt.setString(5, kiralama.getKiralamaTipi());
-            pstmt.setDouble(6, kiralama.getDepozito());
-            pstmt.setDouble(7, kiralama.getKiralamaUcreti()); // Güncellenmiş ücret alanı
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, kiralama.getMusteri().getId());
+                pstmt.setInt(2, kiralama.getArac().getId());
+                pstmt.setTimestamp(3, Timestamp.valueOf(kiralama.getBaslangicTarihi()));
+                pstmt.setTimestamp(4, Timestamp.valueOf(kiralama.getBitisTarihi()));
+                pstmt.setDouble(5, kiralama.getDepozito());
+                pstmt.setDouble(6, kiralama.getKiralamaUcreti());
 
-            pstmt.executeUpdate();
-            System.out.println("✅ Kiralama tamamlandı! Toplam Ücret: " + kiralama.getKiralamaUcreti() + " TL");
+                pstmt.executeUpdate();
+                conn.commit(); // İşlem başarılı, tamamla
+                System.out.println("✅ Kiralama başarıyla tamamlandı! Ücret: " + kiralama.getKiralamaUcreti() + " TL");
+            } catch (SQLException e) {
+                conn.rollback(); // Eğer hata oluşursa geri al
+                throw new RuntimeException("❌ Kiralama işlemi sırasında hata oluştu! Geri alındı.", e);
+            }
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Kiralama işlemi sırasında hata oluştu!", e);
+            throw new RuntimeException("❌ Veritabanı bağlantı hatası!", e);
         }
     }
+
 
     // 2️⃣ Kullanıcının Kiralama Geçmişini Getirme
     public List<Kiralama> kiralamaGecmisiGetir(int kullaniciId) {

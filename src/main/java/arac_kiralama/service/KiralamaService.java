@@ -22,12 +22,12 @@ public class KiralamaService {
             throw new YetkisizIslemException("❌ Sadece müşteriler araç kiralayabilir!");
         }
 
-       /* // 2️⃣ Kurumsal kullanıcılar için minimum 1 aylık kiralama şartı
+        // 2️⃣ Kurumsal kullanıcılar için minimum 1 aylık kiralama şartı
         long kiralamaSuresiGun = ChronoUnit.DAYS.between(kiralama.getBaslangicTarihi(), kiralama.getBitisTarihi());
         if (kullanici.isKurumsal() && kiralamaSuresiGun < 30) {
             throw new RuntimeException("❌ Kurumsal kullanıcılar en az 1 aylık kiralama yapmalıdır.");
         }
-*/
+
         // 3️⃣ 2M TL üzerindeki araçlar için yaş kontrolü ve depozito hesaplama
         double depozito = 0;
         if (arac.getBedel() > 2_000_000) {

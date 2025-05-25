@@ -35,6 +35,11 @@ public class Kullanici {
     public int getYas() { return yas; }
     public double getDepozito() { return depozito; }
 
+    public boolean isKurumsal() {
+        return email.endsWith("@kurumsal.com"); // Örneğin, "@kurumsal.com" uzantılı e-posta adresleri kurumsal kabul edilir
+    }
+
+
     public void setYas(int yas) {
         if (yas < 0) {
             throw new IllegalArgumentException("Yaş negatif olamaz!");
